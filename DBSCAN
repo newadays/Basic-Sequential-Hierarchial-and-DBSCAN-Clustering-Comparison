@@ -1,0 +1,111 @@
+%MATLAB Code
+function SSE = DBSCAN(eps,minpts,data)
+%find the core points.
+neighborhood = zeros(21,21);
+for i=1:length(data)
+    p=data(i)-eps;
+    q = data(i)+eps;j=1;cnt=0;
+    while j<=length(data)
+        if (data(j)>=p)&&(data(j)<=q)
+            cnt=cnt+1;
+            neighborhood(cnt,i)=data(j);
+        end
+        j=j+1;
+    end
+end
+%core points
+j=0;
+for i=1:length(neighborhood)
+    pts = numel(find(neighborhood(:,i)~=0))-1;
+    if pts >= minpts
+        core(j+1)=data(i);
+        loc(j+1)=i;
+        j=j+1;
+    end
+end
+%border points
+t=0;
+for i=1:length(data)
+    flg=ismember(data(i),core);
+    if flg==0
+        strpt(t+1)=data(i);
+        t=t+1;
+    end
+end
+borderpt=zeros(1,length(strpt));
+for k=1:length(strpt)
+    i=1;
+    while 1
+        chk = ismember(strpt(k),neighborhood(:,loc(i)));
+        if chk ==1
+            borderpt(k) = strpt(k);
+            break
+        end
+        i=i+1;
+        if i > 16
+            break
+        end
+    end
+end
+borderpt= nonzeros(borderpt);t=0;
+for k=1:length(strpt)
+    ck = ismember(strpt(k),borderpt);
+    if ck==0
+        t=t+1;
+        noise(t)=strpt(k);
+    end
+end
+borderpt=borderpt';
+clu = horzcat(core,borderpt);
+clust=zeros(length(data),length(core));
+%Clustering
+for i=1:length(core)
+    p=core(i)-eps;
+    q =core(i)+eps;j=1;cnt=0;
+    while j<=length(clu)
+        if (clu(j)>=p)&&(clu(j)<=q)
+            clust(j,i)=clu(j);
+        end
+        j=j+1;
+    end
+end
+%create cluster elements.
+for t=1: size(clust,2)
+    cluststr{t}=nonzeros(clust(:,t));
+end
+k=1;cstr=[];
+for i=1:length(cluststr)-1
+    st1=cluststr{i};
+    st2=cluststr{i+1};
+    ch = intersect(st1,st2);
+    flg2 = numel(nonzeros(ch));
+    if flg2==0
+        k=k+1;
+        cstr=[];
+        st1=[];
+    end
+    Clusterstr{k}=unique(vertcat(st1,st2,cstr));
+    cstr=Clusterstr{k};
+end
+clear i j k ck chk flag flg2 t p q flg pts cstr clust cluststr loc cnt ch st1 st2 strpt clu
+% %SSE
+for i=1:length(Clusterstr)
+    m = mean(Clusterstr{i});
+    st=Clusterstr{i};
+    j=1; sd=[];
+    while j<=length(st)
+        sd(j) = pdist2(m,st(j));
+        j=j+1;
+    end
+    SSE(i)=mean(sd);
+end
+SSE = mean(SSE);
+figure
+hold on
+stem(core,zeros(1,length(core)),'o','filled','LineStyle','-.','MarkerFaceColor','red','MarkerEdgeColor','black')
+stem(borderpt,zeros(1,length(borderpt)),'o','filled','LineStyle','-.','MarkerFaceColor','magenta','MarkerEdgeColor','black')
+stem(noise,zeros(1,length(noise)),'o','filled','LineStyle','-.','MarkerFaceColor','cyan','MarkerEdgeColor','black')
+hold off
+legend('core','borderpt','noise')
+title('DBSCAN Plot on the Numberline');
+toc;

@@ -1,0 +1,117 @@
+%MATLAB Code
+clear all; clc;
+x1=[6,12];x2=[19,7];x3=[15,4];x4=[11,0];x5=[18,12];x6=[9,20];x7=[19,22];
+x8=[18,17];x9=[5,11];x10=[4,18];x11=[7,15];x12=[21,18];x13=[1,19];x14=[1,4];
+x15=[0,9];x16=[5,11];
+data = vertcat(x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16);
+datastr = {x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,x14,x15,x16};
+srt = ['x1','x2','x3','x4','x5','x6','x7','x8','x9','x10','x11','x12','x13','x14','x15','x16'];
+prox = zeros(16,16);
+clearvars -except data datastr prox
+%proximity matrix
+j=1;
+while j<= length(datastr)
+    k=1; i=1;
+    while k <= length(datastr)
+        proxstr(i) = pdist2(datastr{j},datastr{k},'euclidean'); %pdist2(data(i,:),data(i+1,:),'euclidean');
+        k=k+1;i=i+1;
+    end
+    prox(j,:) = proxstr;
+    j=j+1;
+end
+clearvars -except data datastr prox
+%clustering - single link
+tree1 = linkage(prox,'single');
+figure
+subplot(2,1,1);
+[H1,T1,outperm1]=dendrogram(tree1,16,'ColorThreshold','default');
+set(H1,'LineWidth',2)
+title('Dendrogram - Single Link')
+subplot(2,1,2);
+c1 = cluster(tree1,'maxclust',3);
+scatter(data(:,1),data(:,2),10,c1,'o','filled','LineWidth',2)
+title('Cluster - Single Link')
+%clustering - complete link
+tree2 = linkage(prox,'complete');
+figure
+subplot(2,1,1);
+[H2,T2,outperm2]=dendrogram(tree2,16,'ColorThreshold','default');
+%H=dendrogram(tree,P,'ColorThreshold','default');
+set(H2,'LineWidth',2)
+title('Dendrogram  - Complete Link')
+subplot(2,1,2);
+c2 = cluster(tree2,'maxclust',3);
+scatter(data(:,1),data(:,2),10,c2,'o','filled','LineWidth',2)
+title('Cluster  - Complete Link')
+
+%binary matrix & correlation - single link
+binmax1 = zeros(16,16);
+st1=outperm1(1:7);st2=outperm1(8:9);st3=outperm1(10:16);
+store1 = {st1,st2,st3};
+for t=1:length(store1)
+    st=store1{t};
+    for i=1:length(st)
+        j=1;
+        while j<length(st)
+            r=st(i); c=st(j);
+            binmax1(r,c)=1;
+            binmax1(c,r)=1;
+            j=j+1;
+        end
+    end
+end
+%%clean binmax
+i=1;k=0;
+while k < length(binmax1)
+    binmax1(i+k,i+k)=0;
+    k=k+1;
+end
+rc1 = corr2(binmax1,prox);
+%SSE
+for i=1:length(store1)
+    m = mean(store1{i});
+    st=store1{i};
+    j=1; sd=[];
+    while j<=length(st)
+       sd(j) = pdist2(m,st(j));
+       j=j+1;
+    end
+    SSE(i)=mean(sd);
+end
+SSE1 = mean(SSE);
+%binary matrix & correlation - complete link
+binmax2 = zeros(16,16);
+st1=outperm2(1:7);st2=outperm2(8:9);st3=outperm2(10:12);st4=outperm2(13:end);
+store2 = {st1,st2,st3,st4};
+for t=1:length(store2)
+    st=store2{t};
+    for i=1:length(st)
+        j=1;
+        while j<length(st)
+            r=st(i); c=st(j);
+            binmax2(r,c)=1;
+            binmax2(c,r)=1;
+            j=j+1;
+        end
+    end
+end
+%%clean binmax
+i=1;k=0;
+while k < length(binmax2)
+    binmax2(i+k,i+k)=0;
+    k=k+1;
+end
+rc2 = corr2(prox,binmax2);
+clear SSE;
+%SSE
+for i=1:length(store2)
+    m = mean(store2{i});
+    st=store2{i};
+    j=1; sd=[];
+    while j<=length(st)
+       sd(j) = pdist2(m,st(j));
+       j=j+1;
+    end
+    SSE(i)=mean(sd);
+end
+SSE2 = mean(SSE);

@@ -1,0 +1,49 @@
+%MATLAB code
+function BSAS2(data,theta)
+j=1;
+C={'c1','c2','c3','c4'};
+%assign data to the clusters based on theta(threshold)
+for i =1:length(data)-1
+    d = pdist2(data(i,:),data(i+1,:));
+    if d <theta
+        C{j}=vertcat(data(i,:),data(i+1,:));
+    else if j < 4
+            j=j+1;
+            C{j}=data(i+1,:);
+        end
+    end
+end
+%find unassigned members of the data and assign to the closest clusters
+%regardless of theta
+for i=1:length(data)
+    for j=1:length(C)
+        flag=ismember(data(i,:),C{j},'rows');
+    end
+    if flag==0
+        for j=1:length(C)
+            dstr(j)= min(pdist2(data(i,:),C{j}));
+        end
+        %dstr=unique(dstr);
+        dmin=min(dstr);
+        cnum=find(dstr==dmin); cnum=min(cnum);
+        C{cnum}=vertcat(data(i,:),C{cnum});
+    end
+end
+%%remove repititions
+for j=1:length(C)
+    C{j}=unique(C{j},'rows');
+end
+figure
+%axis([1 25 1 25]);
+grid on
+hold on
+%plot
+for j=1:length(C)
+    temp=C{j};
+    x=temp(:,1);
+    y=temp(:,2);
+    scatter(x,y,'filled');
+end
+save('icluster','C');
+title ('Basic Sequential Clustering - Inversed data');
+hold off;

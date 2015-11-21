@@ -73,7 +73,7 @@ for i=1:length(store1)
     st=store1{i};
     j=1; sd=[];
     while j<=length(st)
-       sd(j) = pdist2(m,st(j));
+       sd(j) = (pdist2(m,st(j)))^2;
        j=j+1;
     end
     SSE(i)=sum(sd);
@@ -109,7 +109,7 @@ for i=1:length(store2)
     st=store2{i};
     j=1; sd=[];
     while j<=length(st)
-       sd(j) = pdist2(m,st(j));
+       sd(j) = (pdist2(m,st(j)))^2;
        j=j+1;
     end
     SSE(i)=sum(sd);

@@ -1,5 +1,5 @@
 # Basic-Sequential-Hierarchial-and-DBSCAN-Clustering-Comparison
-The program uses RAND Index, Correlation and SSE to compare clusters
+The program uses RAND Index, Correlation and SSE to compare clusters. Please save the functions in the same folder to test in MATLAB
 Copyright (c) 2015, 'Gbenga Awodokun All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:

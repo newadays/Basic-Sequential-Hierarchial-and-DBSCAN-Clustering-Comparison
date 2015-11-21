@@ -76,9 +76,9 @@ for i=1:length(store1)
        sd(j) = pdist2(m,st(j));
        j=j+1;
     end
-    SSE(i)=mean(sd);
+    SSE(i)=sum(sd);
 end
-SSE1 = mean(SSE);
+SSE1 = sum(SSE);
 %binary matrix & correlation - complete link
 binmax2 = zeros(16,16);
 st1=outperm2(1:7);st2=outperm2(8:9);st3=outperm2(10:12);st4=outperm2(13:end);
@@ -112,6 +112,6 @@ for i=1:length(store2)
        sd(j) = pdist2(m,st(j));
        j=j+1;
     end
-    SSE(i)=mean(sd);
+    SSE(i)=sum(sd);
 end
-SSE2 = mean(SSE);
+SSE2 = sum(SSE);

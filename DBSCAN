@@ -97,9 +97,9 @@ for i=1:length(Clusterstr)
         sd(j) = pdist2(m,st(j));
         j=j+1;
     end
-    SSE(i)=mean(sd);
+    SSE(i)=sum(sd);
 end
-SSE = mean(SSE);
+SSE = sum(SSE);
 figure
 hold on
 stem(core,zeros(1,length(core)),'o','filled','LineStyle','-.','MarkerFaceColor','red','MarkerEdgeColor','black')

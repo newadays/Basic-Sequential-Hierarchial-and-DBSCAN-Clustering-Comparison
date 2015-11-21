@@ -29,7 +29,7 @@ set(H1,'LineWidth',2)
 title('Dendrogram - Single Link')
 subplot(2,1,2);
 c1 = cluster(tree1,'maxclust',3);
-scatter(data(:,1),data(:,2),10,c1,'o','filled','LineWidth',2)
+scatter(data(:,1),data(:,2),10,c1,'o','filled','LineWidth',10)
 title('Cluster - Single Link')
 %clustering - complete link
 tree2 = linkage(prox,'complete');
@@ -41,7 +41,7 @@ set(H2,'LineWidth',2)
 title('Dendrogram  - Complete Link')
 subplot(2,1,2);
 c2 = cluster(tree2,'maxclust',3);
-scatter(data(:,1),data(:,2),10,c2,'o','filled','LineWidth',2)
+scatter(data(:,1),data(:,2),10,c2,'o','filled','LineWidth',10)
 title('Cluster  - Complete Link')
 
 %binary matrix & correlation - single link
